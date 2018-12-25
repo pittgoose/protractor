@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import {Capabilities, WebDriver} from 'selenium-webdriver';
 import {Driver as DriverForChrome, ServiceBuilder as ChromeServiceBuilder} from 'selenium-webdriver/chrome';
 import {Driver as DriverForFirefox, ServiceBuilder as FirefoxServiceBuilder} from 'selenium-webdriver/firefox';
-import {ChromeDriver, GeckoDriver} from 'webdriver-manager-replacement';
+import {ChromeDriver, GeckoDriver} from 'webdriver-manager';
 
 import {Config} from '../config';
 import {BrowserError} from '../exitCodes';
@@ -49,7 +49,7 @@ export class Direct extends DriverProvider {
    * @override
    * @return webdriver instance
    */
-  getNewDriver(): WebDriver {
+  async getNewDriver(): Promise<WebDriver> {
     let driver: WebDriver;
 
     switch (this.config_.capabilities.browserName) {
@@ -74,7 +74,7 @@ export class Direct extends DriverProvider {
         }
 
         let chromeService = new ChromeServiceBuilder(chromeDriverFile).build();
-        driver = DriverForChrome.createSession(
+        driver = await DriverForChrome.createSession(
             new Capabilities(this.config_.capabilities), chromeService);
         break;
       case 'firefox':
@@ -98,7 +98,7 @@ export class Direct extends DriverProvider {
         }
 
         let firefoxService = new FirefoxServiceBuilder(geckoDriverFile).build();
-        driver = DriverForFirefox.createSession(
+        driver = await DriverForFirefox.createSession(
             new Capabilities(this.config_.capabilities), firefoxService);
         break;
       default:
